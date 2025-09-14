@@ -1,0 +1,137 @@
+<!--
+TrendXBD - Single-file Reselling Webstore (Facebook Order)
+Instructions:
+1) Replace LOGO_SRC with your logo image URL or place a file named logo.png in the same folder and update the path.
+2) To add products: edit the `products` array in the <script> at the bottom (title, price, image, sku, description).
+3) To deploy on GitHub Pages: create a repo (e.g. trendxbd), add this file as index.html on the main branch and enable GitHub Pages from repo Settings → Pages (use branch: main / folder: / (root)). Or push to gh-pages branch.
+4) For images: either host them in the repo (images/) or use direct image URLs.
+-->
+
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TrendX BD — Reselling Store</title>
+  <style>
+    :root{--accent:#1877f2;--muted:#666}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans Bengali',sans-serif;margin:0;background:#f7f7f8;color:#111}
+    header{background:white;box-shadow:0 2px 8px rgba(10,10,10,0.04);padding:12px 16px;display:flex;align-items:center;gap:12px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo img{width:46px;height:46px;object-fit:contain;border-radius:8px}
+    .brand{font-weight:700;font-size:18px}
+    .tag{color:var(--muted);font-size:13px}
+    main{padding:16px;max-width:1100px;margin:18px auto}
+    .hero{display:flex;flex-direction:column;gap:12px;background:linear-gradient(90deg,#fff,#fbfdff);padding:18px;border-radius:12px}
+    .hero-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+    .hero h1{margin:0;font-size:20px}
+    .search{flex:1;min-width:200px}
+    .search input{width:100%;padding:10px;border-radius:8px;border:1px solid #e1e1e8}
+    .fb-btn{background:linear-gradient(90deg,var(--accent),#3b5998);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+    .card{background:white;border-radius:12px;padding:10px;box-shadow:0 2px 6px rgba(10,10,10,0.03);display:flex;flex-direction:column}
+    .card img{width:100%;height:180px;object-fit:cover;border-radius:8px}
+    .card .title{font-weight:700;margin-top:8px}
+    .card .price{margin-top:6px;color:var(--accent);font-weight:700}
+    .card .desc{color:var(--muted);font-size:13px;margin-top:6px}
+    .card .actions{margin-top:auto;display:flex;gap:8px}
+    .btn{flex:1;padding:8px 10px;border-radius:8px;text-align:center;text-decoration:none;display:inline-block}
+    .btn-buy{background:var(--accent);color:white}
+    .btn-details{border:1px solid #eee;color:var(--muted)}
+    footer{padding:18px;text-align:center;color:var(--muted);font-size:13px;margin-top:18px}
+    @media (min-width:900px){.hero{flex-direction:row;align-items:center;justify-content:space-between}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img id="logo" src="logo.png" alt="logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'"/>
+      <div>
+        <div class="brand">TrendX BD</div>
+        <div class="tag">Reselling shop — cash on delivery / Facebook order</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>TrendX BD — আপনার ছোট অনলাইন দোকান</h1>
+        <p class="tag">অর্ডার দিতে চাইলে আমাদের ফেসবুক পেইজে ইনবক্স করুন। নিচে পণ্য থেকে সিলেক্ট করে সরাসরি Facebook পেইজে যেতে পারবেন।</p>
+      </div>
+      <div class="hero-row">
+        <div class="search">
+          <input id="searchInput" placeholder="পণ্যের নাম দিয়ে খুঁজুন (উদাহরণ: শার্ট, মোবাইল)"/>
+        </div>
+        <a id="fbBtnTop" class="fb-btn" href="https://www.facebook.com/share/17PSrF8uKe/" target="_blank">Facebook পেইজ</a>
+      </div>
+    </section>
+
+    <div style="margin-top:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+      <div style="color:var(--muted)">Showing <span id="count">0</span> products</div>
+      <div style="font-size:13px;color:var(--muted)">Payment: Cash on delivery possible</div>
+    </div>
+
+    <section class="grid" id="productsGrid">
+      <!-- Products injected by JS -->
+    </section>
+
+    <footer>
+      © <span id="year"></span> TrendX BD — Built for resellers. Want help? Reply here and I'll customize.
+    </footer>
+  </main>
+
+  <template id="cardTpl">
+    <div class="card">
+      <img class="pimg" src="" alt="product"/>
+      <div class="title"></div>
+      <div class="price"></div>
+      <div class="desc"></div>
+      <div class="actions">
+        <a class="btn btn-buy" target="_blank">Order via Facebook</a>
+        <a class="btn btn-details" href="#" onclick="return false;">Details</a>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    const FB_PAGE = 'https://www.facebook.com/share/17PSrF8uKe/';
+    const STORE_NAME = 'TrendX BD';
+
+    const products = [
+      {sku:'TX001', title:'Mens Casual Shirt - Blue', price:'৳450', image:'https://via.placeholder.com/600x600?text=Shirt+Blue', desc:'Medium size, cotton blend.'},
+      {sku:'TX002', title:'Ladies Scarf - Floral', price:'৳250', image:'https://via.placeholder.com/600x600?text=Scarf', desc:'Lightweight, multiple colors.'},
+      {sku:'TX003', title:'Powerbank 10000mAh', price:'৳850', image:'https://via.placeholder.com/600x600?text=Powerbank', desc:'Fast charge, compact.'}
+    ];
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function render(list){
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML='';
+      list.forEach(p=>{
+        const tpl = document.getElementById('cardTpl').content.cloneNode(true);
+        tpl.querySelector('.pimg').src = p.image;
+        tpl.querySelector('.title').textContent = p.title;
+        tpl.querySelector('.price').textContent = p.price;
+        tpl.querySelector('.desc').textContent = p.desc;
+        const buy = tpl.querySelector('.btn-buy');
+        buy.href = FB_PAGE;
+        grid.appendChild(tpl);
+      });
+      document.getElementById('count').textContent = list.length;
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e)=>{
+      const q = e.target.value.trim().toLowerCase();
+      if(!q) return render(products);
+      const filtered = products.filter(p=> (p.title+p.desc+p.sku).toLowerCase().includes(q));
+      render(filtered);
+    });
+
+    render(products);
+  </script>
+</body>
+</html>
